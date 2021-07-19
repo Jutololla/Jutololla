@@ -62,7 +62,7 @@ public class Console implements Serializable {
         //Conforme van siendo creados son asociados al ArrayList initialCarsOrderInLanes, el cual define el orden de los carros en los carriles.
         Scanner scanner = new Scanner(System.in);
         String auxString;
-        List auxInitialCarsOrderInLanes = new ArrayList<Car>();
+        List<Car> auxInitialCarsOrderInLanes = new ArrayList<Car>();
         Float auxFloat;
         int lane = 1;
         Race existingRace = new Race();
@@ -70,6 +70,22 @@ public class Console implements Serializable {
         //Race existingRace= existingConsole.getRacesRecord().get(existingConsole.getRaceIdCount()-1);
         if (!existingConsole.getRacesRecord().isEmpty()) {
             existingRace = existingConsole.getRacesRecord().get(existingConsole.getRacesRecord().size() - 1); //se sobrescribe con la ultima carrera existente
+            //auxInitialCarsOrderInLanes = existingConsole.getRacesRecord().get(existingConsole.getRacesRecord().size() - 1).getInitialCarsOrderInLanes();
+            for(int i=0;i<=carIdCount-2;i++){
+            auxInitialCarsOrderInLanes.add(existingConsole.getRacesRecord().get(carIdCount-2).getInitialCarsOrderInLanes().get(i));
+            }
+            for(Car car:auxInitialCarsOrderInLanes){
+            car.setMetersRunned(0);
+        }
+            
+            //for(Car car:existingConsole.getRacesRecord().get(i))
+            
+            
+            
+                    
+                    
+                    
+            lane = auxInitialCarsOrderInLanes.size() + 1;
         }
 
         Race race = new Race();
@@ -109,54 +125,84 @@ public class Console implements Serializable {
                     raceIdCount++;
                 }
             }
-        }
-        else{
-        do {
-            System.out.println("Ingrese de cuantos Km es la pista");
-            auxString = scanner.nextLine();
+        } else {
+            do {
+                System.out.println("Ingrese de cuantos Km es la pista");
+                auxString = scanner.nextLine();
 
-            auxFloat = convertToValid(auxString);
-            if (auxFloat == 0) {
-                main.invalidOption();
-                System.out.println("Recuerde que debe ser numérico, mayor que 0 y que el separador decimal es el punto (.)");
-            } else {
-                race = new Race(auxFloat * 1000, raceIdCount);
-                raceIdCount++;
-            }
-        } while (auxFloat == 0);
+                auxFloat = convertToValid(auxString);
+                if (auxFloat == 0) {
+                    main.invalidOption();
+                    System.out.println("Recuerde que debe ser numérico, mayor que 0 y que el separador decimal es el punto (.)");
+                } else {
+                    race = new Race(auxFloat * 1000, raceIdCount);
+                    raceIdCount++;
+                }
+            } while (auxFloat == 0);
         }
         //System.out.println("Los pilotos existentes son:");
 
-        do {
-            System.out.println("Ingrese el nombre del conductor");
-            auxString = scanner.nextLine();
-            Driver driverAux = new Driver(auxString, driverIdCount);
-            driverIdCount++;
-            Car carAux = new Car(driverAux, carIdCount, lane);
-            carIdCount++;
-            lane++;
-            auxInitialCarsOrderInLanes.add(carAux);
+        if (existingConsole.getDriverIdCount() != 1) {
+            System.out.println("Los pilotos existentes son:");
+            Map<Integer, Driver> map = existingConsole.getDriversRecord();
+            for (Map.Entry<Integer, Driver> iterator : map.entrySet()) {
+                Console.showDriverParametersResumed(iterator.getValue(), existingConsole);
+            }
             do {
-                System.out.println("Desea agregar otro conductor?\n 1. Si \n 2. No");
-                auxString = scanner.nextLine();
+                do {
+                    System.out.println("\nDesea agregar mas pilotos? 1. Si    2. No");
+                    auxString = scanner.nextLine();
+                    if (!auxString.equals("2") && !auxString.equals("1")) {
+                        main.invalidOption();
+                    }
+                } while (!auxString.equals("2") && !auxString.equals("1"));
                 switch (auxString) {
                     case "1" -> {
+
+                        System.out.println("Ingrese el nombre del piloto a agregar");
+                        auxString = scanner.nextLine();
+                        Driver driverAux = new Driver(auxString, driverIdCount);
+                        driverIdCount++;
+                        Car carAux = new Car(driverAux, carIdCount, lane);
+                        carIdCount++;
+                        lane++;
+                        auxInitialCarsOrderInLanes.add(carAux);
                     }
                     case "2" -> {
                         break;
                     }
-                    default -> {
-                        System.out.println("\nOpcion invalida");
-                        System.out.println("Oprima cualquier tecla para continuar\n\n");
-                        new java.util.Scanner(System.in).nextLine();
-                    }
                 }
-            } while (!auxString.equals("2") && !auxString.equals("1"));
+            } while (!auxString.equals("2"));
+        } else {
+            System.out.println("Aun no se han creado competidores\n");
+            do {
+                System.out.println("Ingrese el nombre del conductor");
+                auxString = scanner.nextLine();
+                Driver driverAux = new Driver(auxString, driverIdCount);
+                driverIdCount++;
+                Car carAux = new Car(driverAux, carIdCount, lane);
+                carIdCount++;
+                lane++;
+                auxInitialCarsOrderInLanes.add(carAux);
+                do {
+                    System.out.println("Desea agregar otro conductor?\n 1. Si \n 2. No");
+                    auxString = scanner.nextLine();
+                    switch (auxString) {
+                        case "1" -> {
+                        }
+                        case "2" -> {
+                            break;
+                        }
+                        default -> {
+                            main.invalidOption();
+                        }
+                    }
+                } while (!auxString.equals("2") && !auxString.equals("1"));
 
-        } while (!auxString.equals("2"));
+            } while (!auxString.equals("2"));
+        }
         race.setInitialCarsOrderInLanes(auxInitialCarsOrderInLanes);
         return race;
-
     }
 
     public Race duplicateRace(Race race) {
@@ -168,7 +214,7 @@ public class Console implements Serializable {
 
     public static void showRaceParameters(Race race) {
         int auxCount = 1;
-        System.out.println("\n\n\n\n= RACE'S INFORMATION ="
+        System.out.println("\n= RACE'S INFORMATION ="
                 + "\n|  RaceID: " + race.getRaceId() + "; Track length: " + race.getTrackLength() / 1000 + " km\n"
                 + "=INITIAL POSITIONS=\n"
                 + "|  Lane  CarID   Driver's name  1st place  2nd place  3rd place ");
@@ -258,6 +304,11 @@ public class Console implements Serializable {
             System.out.println("RaceID = " + race);
         }
         System.out.println("= END OF REPORT =");
+    }
+
+    public static void showDriverParametersResumed(Driver driver, Console console) {
+        //Este metodo muestra los datos que tiene un objeto Driver.
+        System.out.println("|  DriverID: " + driver.getDriverId() + "; Driver's name: " + driver.getName());
     }
 
     public static void showDriversAvailable(Console console) {

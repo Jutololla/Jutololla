@@ -24,7 +24,8 @@ public class main {
                     + "\nBienvenido al simulador de carreras de autos. Por favor seleccione una opcion: "
                     + "\n 1. Jugar"
                     + "\n 2. Consultar historico"
-                    + "\n 3. Salir del simulador\n");
+                    + "\n 3. Borrar datos históricos"
+                    + "\n 4. Salir del simulador\n");
             auxString = scanner.nextLine();
             switch (auxString) {
                 case "1" -> {
@@ -98,16 +99,21 @@ public class main {
                         } while (!auxString.equals("1"));
                     }
                 }
-                case "3" -> {
-                    break;
+                case "4" -> {
+                    break;}
+                    case "3" ->{
+                        Conection.delete();
+                        System.out.println("Se han borrado los datos históricos. \nSe cerrará el juego.");
+                        auxString="4";
+                        break;
                 }
+                
                 default -> {
-                    System.out.println("\nOpcion invalida");
-                    System.out.println("Oprima cualquier tecla para continuar\n\n");
+                    main.invalidOption();
                     new java.util.Scanner(System.in).nextLine();
                 }
             }
-        } while (!auxString.equals("3"));
+        } while (!auxString.equals("4"));
     }
 
     public static boolean isFloat(String cad) {

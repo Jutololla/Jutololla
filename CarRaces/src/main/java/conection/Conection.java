@@ -33,4 +33,10 @@ public class Conection {
             return false;
         }
     }
+    
+    public static void delete() throws FileNotFoundException, IOException{
+        ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream("archivo.obj"));
+        output.reset();
+        output.close();
+    }
 }
