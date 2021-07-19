@@ -5,13 +5,12 @@ import java.util.*;
 
 public class Race implements Serializable{
     int raceId;
-    float trackLength;
+    float trackLength=-1;
     List<Car> initialCarsOrderInLanes = new ArrayList<Car>();
     List<Car> carsFinishingOrderRecord = new ArrayList<Car>();
 
     public Race() {
     }
-
     
     public Race(float trackLength, int raceIdCount) {
         this.trackLength = trackLength;

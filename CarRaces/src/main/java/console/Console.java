@@ -3,15 +3,16 @@ package console;
 import domain.*;
 import java.io.Serializable;
 import java.util.*;
+import test.main;
 import static test.main.*;
 
-public class Console implements Serializable{
+public class Console implements Serializable {
 
     int raceIdCount = 1;
     int driverIdCount = 1;
     int carIdCount = 1;
     List<Race> racesRecord = new ArrayList<Race>();
-    static Map<Integer, Driver> driversRecord = new HashMap<Integer, Driver>();
+    Map<Integer, Driver> driversRecord = new HashMap<Integer, Driver>();
 
     public Console() {
     }
@@ -56,32 +57,76 @@ public class Console implements Serializable{
         this.driversRecord = driversRecord;
     }
 
-    
-    
-    public Race createRace() {
+    public Race createRace(Console existingConsole) {
         //este metodo inicialmente pide trackLength para crear un objeto Race. Luego interactua con el usuario pidiendole nombres para crear Driver y Car. 
         //Conforme van siendo creados son asociados al ArrayList initialCarsOrderInLanes, el cual define el orden de los carros en los carriles.
-
         Scanner scanner = new Scanner(System.in);
         String auxString;
         List auxInitialCarsOrderInLanes = new ArrayList<Car>();
         Float auxFloat;
         int lane = 1;
+        Race existingRace = new Race();
 
+        //Race existingRace= existingConsole.getRacesRecord().get(existingConsole.getRaceIdCount()-1);
+        if (!existingConsole.getRacesRecord().isEmpty()) {
+            existingRace = existingConsole.getRacesRecord().get(existingConsole.getRacesRecord().size() - 1); //se sobrescribe con la ultima carrera existente
+        }
+
+        Race race = new Race();
+
+        if (existingConsole.getRaceIdCount() != 1) {
+            //getTrackLength()
+            //existingConsole.getRacesRecord().get(existingConsole.getRacesRecord().size()).getTrackLength()
+            //existingRace.getTrackLength() / 1000
+            do {
+                System.out.println("El largo de la pista es de " + existingRace.getTrackLength() / 1000 + "km."
+                        + "\nDesea cambiarlo? 1. Si 2. No");
+                auxString = scanner.nextLine();
+                if (!auxString.equals("2") && !auxString.equals("1")) {
+                    main.invalidOption();
+                }
+            } while (!auxString.equals("2") && !auxString.equals("1"));
+            switch (auxString) {
+                case "1" -> {
+                    do {
+                        System.out.println("Ingrese de cuantos Km es la pista");
+                        auxString = scanner.nextLine();
+
+                        auxFloat = convertToValid(auxString);
+                        if (auxFloat == 0) {
+                            main.invalidOption();
+                            System.out.println("Recuerde que debe ser numérico, mayor que 0 y que el separador decimal es el punto (.)");
+                        } else {
+                            race = new Race(auxFloat * 1000, raceIdCount);
+                            raceIdCount++;
+                        }
+                    } while (auxFloat == 0);
+
+                }
+                case "2" -> {
+                    System.out.println("");
+                    race = new Race(existingRace.getTrackLength(), raceIdCount);
+                    raceIdCount++;
+                }
+            }
+        }
+        else{
         do {
-            System.out.println("Ingrese de cuantos Km tiene la pista");
+            System.out.println("Ingrese de cuantos Km es la pista");
             auxString = scanner.nextLine();
 
-            auxFloat = isValid(auxString);
+            auxFloat = convertToValid(auxString);
             if (auxFloat == 0) {
-                System.out.println("No ingresó un valor valido. Este debe ser numérico y mayor que 0. Recuerde que el separador decimal es el punto (.)\n Rectifique e intente nuevamente. ");
+                main.invalidOption();
+                System.out.println("Recuerde que debe ser numérico, mayor que 0 y que el separador decimal es el punto (.)");
+            } else {
+                race = new Race(auxFloat * 1000, raceIdCount);
+                raceIdCount++;
             }
         } while (auxFloat == 0);
+        }
+        //System.out.println("Los pilotos existentes son:");
 
-        //var auxFloat = Float.parseFloat(auxString)*1000;
-        //System.out.println("No ingreso un valor numerico para los Km de la pista. Intente de nuevo");
-        Race race = new Race(auxFloat * 1000, raceIdCount);
-        raceIdCount++;
         do {
             System.out.println("Ingrese el nombre del conductor");
             auxString = scanner.nextLine();
@@ -122,7 +167,6 @@ public class Console implements Serializable{
     }
 
     public static void showRaceParameters(Race race) {
-        //Este metodo muestra los datos que tiene un objeto Race.
         int auxCount = 1;
         System.out.println("\n\n\n\n= RACE'S INFORMATION ="
                 + "\n|  RaceID: " + race.getRaceId() + "; Track length: " + race.getTrackLength() / 1000 + " km\n"
@@ -160,8 +204,6 @@ public class Console implements Serializable{
                 } else {
                     if (!race.getCarsFinishingOrderRecord().contains(car)) {
                         race.getCarsFinishingOrderRecord().add(car);
-                        //RaceRecord raceRecordAux = new RaceRecord();
-                        //car.getPilot().getVictoryRecord().add(victoryAux);
                     }
                 }
             }
@@ -172,42 +214,21 @@ public class Console implements Serializable{
         // 2. Se agrega la carrera corrida al record de carreras
         // 3. Se actualizan/agregan los datos de los pilotos al registro de pilotos
         {  //1.
-            //System.out.println(race.getCarsFinishingOrderRecord().size());
-            
-            
             for (int i = 1; i <= race.getCarsFinishingOrderRecord().size(); i++) {
                 if (i == 1) {
                     race.getCarsFinishingOrderRecord().get(0).getDriver().setFirstPlaceCount(race.getCarsFinishingOrderRecord().get(0).getDriver().getFirstPlaceCount() + 1);
-                    auxObject=race.getCarsFinishingOrderRecord().get(0).getDriver().getVictoryRecord().add(race.getRaceId());
+                    auxObject = race.getCarsFinishingOrderRecord().get(0).getDriver().getVictoryRecord().add(race.getRaceId());
                 }
                 if (i == 2) {
                     race.getCarsFinishingOrderRecord().get(1).getDriver().setSecondPlaceCount(race.getCarsFinishingOrderRecord().get(1).getDriver().getSecondPlaceCount() + 1);
-                  auxObject=race.getCarsFinishingOrderRecord().get(1).getDriver().getVictoryRecord().add(race.getRaceId());
-                   
+                    auxObject = race.getCarsFinishingOrderRecord().get(1).getDriver().getVictoryRecord().add(race.getRaceId());
+
                 }
                 if (i == 3) {
                     race.getCarsFinishingOrderRecord().get(2).getDriver().setThirdPlaceCount(race.getCarsFinishingOrderRecord().get(2).getDriver().getThirdPlaceCount() + 1);
-                    auxObject=race.getCarsFinishingOrderRecord().get(2).getDriver().getVictoryRecord().add(race.getRaceId());
+                    auxObject = race.getCarsFinishingOrderRecord().get(2).getDriver().getVictoryRecord().add(race.getRaceId());
                 }
             }
-//                switch (i) {
-//                    case 1: {
-//                        race.getCarsFinishingOrderRecord().get(0).getDriver().setFirstPlaceCount(race.getCarsFinishingOrderRecord().get(0).getDriver().getFirstPlaceCount() + 1);
-//                        race.getCarsFinishingOrderRecord().get(0).getDriver().getVictoryRecord().add(race);
-//                    }
-//                    case 2: {
-//                        race.getCarsFinishingOrderRecord().get(1).getDriver().setSecondPlaceCount(race.getCarsFinishingOrderRecord().get(1).getDriver().getSecondPlaceCount() + 1);
-//                    race.getCarsFinishingOrderRecord().get(1).getDriver().getVictoryRecord().add(race);
-//                    }
-//                    case 3: {
-//                        race.getCarsFinishingOrderRecord().get(2).getDriver().setThirdPlaceCount(race.getCarsFinishingOrderRecord().get(2).getDriver().getThirdPlaceCount() + 1);
-//                    race.getCarsFinishingOrderRecord().get(2).getDriver().getVictoryRecord().add(race);
-//                    }
-//                }}
-
-//            race.getCarsFinishingOrderRecord().get(0).getDriver().setFirstPlaceCount(race.getCarsFinishingOrderRecord().get(0).getDriver().getFirstPlaceCount() + 1);
-//            race.getCarsFinishingOrderRecord().get(1).getDriver().setSecondPlaceCount(race.getCarsFinishingOrderRecord().get(1).getDriver().getSecondPlaceCount() + 1);
-//            race.getCarsFinishingOrderRecord().get(2).getDriver().setThirdPlaceCount(race.getCarsFinishingOrderRecord().get(2).getDriver().getThirdPlaceCount() + 1);
         }
         {//2.
             racesRecord.add(race);
@@ -216,39 +237,34 @@ public class Console implements Serializable{
             for (Car car : race.getCarsFinishingOrderRecord()) {
                 if (driversRecord.containsKey(car.getDriver().getDriverId())) {
                     auxObject = driversRecord.replace(car.getDriver().getDriverId(), car.getDriver());
-                    //System.out.println("auxObject = " + auxObject);
                 } else {
                     auxObject = driversRecord.put(car.getDriver().getDriverId(), car.getDriver());
-                    //System.out.println("auxObject = " + auxObject);
                 }
 
             }
         }
-
-        //driversRecord.
     }
-    
+
     public static void showDriverParameters(Driver driver, Console console) {
         //Este metodo muestra los datos que tiene un objeto Driver.
-        int auxCount = 1;
         System.out.println("\n\n\n\n= DRIVER'S INFORMATION ="
-                + "\n|  DriverID: " + driver.getDriverId()+ "; Driver's name: " + driver.getName()
+                + "\n|  DriverID: " + driver.getDriverId() + "; Driver's name: " + driver.getName()
                 + "\n=MEDALS WON=\n"
-                + "1st place  "+driver.getFirstPlaceCount()
-                        + "\n2nd place  "+driver.getSecondPlaceCount()
-                        + "\n3rd place  "+driver.getThirdPlaceCount()
-        +"\n =RACES WON=");
-        for(Integer race:driver.getVictoryRecord()){
+                + "1st place  " + driver.getFirstPlaceCount()
+                + "\n2nd place  " + driver.getSecondPlaceCount()
+                + "\n3rd place  " + driver.getThirdPlaceCount()
+                + "\n =RACES WON=");
+        for (Integer race : driver.getVictoryRecord()) {
             System.out.println("RaceID = " + race);
-            //System.out.println("\nPlace  "+console.getRacesRecord().get(race).getCarsFinishingOrderRecord().indexOf(driver.getDriverId())+"\n");
         }
         System.out.println("= END OF REPORT =");
     }
-    
-//    public static void showDriversRegistry(){
-//        Driver aux= new Driver();
-//        aux = driversRecord.get(1);
-//        showDriverParameters(aux);
-//        
-//    }
+
+    public static void showDriversAvailable(Console console) {
+        Map<Integer, Driver> map = console.getDriversRecord();
+
+        for (Map.Entry<Integer, Driver> iterator : map.entrySet()) {
+            Console.showDriverParameters(iterator.getValue(), console);
+        }
+    }
 }

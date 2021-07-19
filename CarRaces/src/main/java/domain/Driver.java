@@ -4,16 +4,14 @@ import java.io.Serializable;
 import java.util.*;
 import test.*;
 
-public class Driver implements Serializable{
-    
+public class Driver implements Serializable {
+
     String name;
-    int driverId, firstPlaceCount=0, secondPlaceCount=0, thirdPlaceCount=0;
+    int driverId, firstPlaceCount = 0, secondPlaceCount = 0, thirdPlaceCount = 0;
     List<Integer> victoryRecord = new ArrayList();
 
     public Driver() {
     }
-    
-    
 
     public Driver(String name, int driverIdCount) {
         this.name = name;
@@ -68,21 +66,9 @@ public class Driver implements Serializable{
         this.victoryRecord = victoryRecord;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Driver{" + "name=" + name + ", driverId=" + driverId + ", firstPlaceCount=" + firstPlaceCount + ", secondPlaceCount=" + secondPlaceCount + ", thirdPlaceCount=" + thirdPlaceCount + ", victoryRecord=" + victoryRecord + '}';
-//    }
+    @Override
+    public String toString() {
+        return "Driver{" + "name=" + name + ", driverId=" + driverId + ", firstPlaceCount=" + firstPlaceCount + ", secondPlaceCount=" + secondPlaceCount + ", thirdPlaceCount=" + thirdPlaceCount + ", victoryRecord=" + victoryRecord + '}';
+    }
 
-   
-
-    
-    
-    
-   
-    
-    
-    
-    
-         
-    
 }

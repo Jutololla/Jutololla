@@ -10,15 +10,14 @@ import java.util.*;
 public class main {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Console console = new Console();    //se crea consola
-        console=Conection.restore(console);//
-        Race auxRace = new Race();   // se crea carrera auxiliar
-        
-        //int raceIdCount = 1;
-        //int driverIdCount = 1;
-        //int carIdCount = 1;
-        String auxString;
-        Scanner scanner = new Scanner(System.in);
+        Console console = new Console();    //se crea consola vacia
+        console = Conection.restore(console);// se sobrescribe con la existente en archivo (si es que existe, sino pues queda vacia)
+        Race auxRace = new Race();   // se crea carrera auxiliar vacia
+        if (!console.getRacesRecord().isEmpty()) {
+            auxRace = console.getRacesRecord().get(console.getRacesRecord().size() - 1); //se sobrescribe con la ultima carrera existente
+        }
+        String auxString;  //objeto auxiliar
+        Scanner scanner = new Scanner(System.in); //objeto auxiliar
 
         do {
             System.out.println("\n\n\n----------------------------------------------------------------------------------------------------------------------------"
@@ -29,18 +28,14 @@ public class main {
             auxString = scanner.nextLine();
             switch (auxString) {
                 case "1" -> {
-                    System.out.println("case 1");
-                    auxRace = console.createRace();
+                    auxRace = console.createRace(console);
                     console.startRace(auxRace);
                     console.showRaceParameters(auxRace);
                     Conection.save(console);//Se guarda el objeto Consola en un archivo externo para que persistan los datos
-
                     do {
-
                         System.out.println("\nMenu:"
                                 + "\n 1. Volver al menu inicial"
                                 + "\n 2. Correr de nuevo");
-
                         auxString = scanner.nextLine();
                         switch (auxString) {
                             case "2" -> {
@@ -60,7 +55,6 @@ public class main {
                             }
                         }
                     } while (!auxString.equals("1"));
-                    //while (auxString!='3');
                 }
                 case "2" -> {
                     if (console.getRaceIdCount() == 1) {
@@ -74,30 +68,24 @@ public class main {
                             switch (auxString) {
                                 case "3" -> {
                                     Map<Integer, Driver> map = console.getDriversRecord();
-
                                     for (Map.Entry<Integer, Driver> iterator : map.entrySet()) {
-                                        //System.out.print(iterator.getKey() + " - " + iterator.getValue());
-                                        Console.showDriverParameters(iterator.getValue(),console);
-                                        
-                                    }
+                                        Console.showDriverParameters(iterator.getValue(), console);
+                                    //Console.showDriversAvailable(console);
+                                    
+                                }
                                     System.out.println("Oprima cualquier tecla para volver al menu anterior");
                                     new java.util.Scanner(System.in).nextLine();
                                 }
                                 case "2" -> {
                                     //despliega el historico de todas las carreras hechas a traves del ArrayList raceRecord
-                                    //System.out.println("despliega el historico de todas las carreras hechas a traves del ArrayList raceRecord");
-
                                     for (int i = 0; i < console.getRacesRecord().size(); i++) {
                                         Race auxRace2 = new Race();
                                         auxRace2 = console.getRacesRecord().get(i);
                                         console.showRaceParameters(auxRace2);
-
                                     }
-
                                     System.out.println("Oprima cualquier tecla para volver al menu anterior");
                                     new java.util.Scanner(System.in).nextLine();
                                 }
-
                                 case "1" -> {
                                     break;
                                 }
@@ -107,11 +95,9 @@ public class main {
                                     new java.util.Scanner(System.in).nextLine();
                                 }
                             }
-
                         } while (!auxString.equals("1"));
                     }
                 }
-
                 case "3" -> {
                     break;
                 }
@@ -121,7 +107,6 @@ public class main {
                     new java.util.Scanner(System.in).nextLine();
                 }
             }
-
         } while (!auxString.equals("3"));
     }
 
@@ -143,22 +128,26 @@ public class main {
         }
     }
 
-    public static float isValid(String cad) {
-
+    public static float convertToValid(String cad) {
         if (isFloat(cad) && Float.parseFloat(cad) > 0) {
             return Float.parseFloat(cad);
         }
-        //if (a > 0) {
-        //  return a;
-
         if (isInt(cad) && Integer.parseInt(cad) > 0) {
             float a = Integer.parseInt(cad);
             return a;
-
         } else {
             System.out.println("mensaje de error");
             float a = 0;
             return a;
         }
+    }
+
+    public static void invalidOption() {
+        System.out.println("_______________________"
+                + "|   Opción no válida   |"
+                + "| Rectifique e intente |"
+                + "|     nuevamente       |"
+                + "          |______________________|");
+
     }
 }
